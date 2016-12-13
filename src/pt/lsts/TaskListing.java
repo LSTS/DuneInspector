@@ -35,6 +35,8 @@ public class TaskListing {
 				if (f == null || this.tasks.containsKey(f)) {
 					toProcess.remove(t);
 					t.superTask = this.tasks.get(f);
+					if (f != null)
+						t.superClass = t.superTask.name;
 				}
 				else {
 					DuneTask parent = resolveTask(t.superClass);
@@ -42,6 +44,7 @@ public class TaskListing {
 					toProcess.add(parent);
 					toProcess.remove(t);
 					t.superTask = parent;
+					t.superClass = parent.name;
 				}
 			}
 		}		

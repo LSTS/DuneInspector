@@ -2,12 +2,14 @@ package pt.lsts;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import net.sourceforge.plantuml.SourceStringReader;
 import pt.lsts.imc.IMCDefinition;
@@ -114,11 +116,16 @@ public class UmlGenerator {
 	}
 
 	private static String classUml(DuneTask dt) {
-		StringBuilder sb = new StringBuilder();
 		if (dt.filename.getAbsolutePath().contains("DUNE"))
-			sb.append("class " + dt.name.replaceAll("\\.", "::") + " {\n");
+			return classUml(dt, "<< (C,#CC77CC) >>");
 		else
-			sb.append("class " + dt.name.replaceAll("\\.", "::") + " << (T,#CC77CC) >> {\n");
+			return classUml(dt, "<< (T,#7777CC) >>");
+	}
+	
+	
+	private static String classUml(DuneTask dt, String type) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("class " + dt.name.replaceAll("\\.", "::") + " "+type+" {\n");
 		for (String input : dt.inputs) {
 			sb.append("  ~consume(" + input + ")\n");
 		}
@@ -131,6 +138,52 @@ public class UmlGenerator {
 		return sb.toString();
 	}
 
+	public static String taskInteractionUml(DuneTask dt) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("@startuml\n");
+		sb.append(classUml(dt));
+		//sb.append("layout_new_line\n");
+		ArrayList<File> msgs = new ArrayList<>();
+		msgs.add(dt.filename);
+		for (String input : dt.inputs) {
+			if (TaskListing.instance().getProducers().get(input) == null)
+				continue;
+			for (File f : TaskListing.instance().getProducers().get(input)) {
+				
+				DuneTask task = TaskListing.instance().getTasks().get(f);
+				if (!msgs.contains(f)) {
+					sb.append(classUml(task));
+					msgs.add(f);
+					sb.append(task.name.replaceAll("\\.", "::")+" \""+input+"\" -down-> "+dt.name.replaceAll("\\.", "::")+"\n");
+				}
+				else
+					sb.append(task.name.replaceAll("\\.", "::")+" \""+input+"\" -down-> "+dt.name.replaceAll("\\.", "::")+"\n");
+			}			
+		}
+		
+		for (String output : dt.outputs) {
+			if (TaskListing.instance().getConsumers().get(output) == null)
+				continue;
+			for (File f : TaskListing.instance().getConsumers().get(output)) {
+				if (f.equals(dt.filename))
+					continue;
+				DuneTask task = TaskListing.instance().getTasks().get(f);
+				if (!msgs.contains(f)) {
+					sb.append(classUml(task));
+					msgs.add(f);
+					sb.append(task.name.replaceAll("\\.", "::")+" \""+output+"\" <-down- "+dt.name.replaceAll("\\.", "::")+"\n");
+				}
+				else
+					sb.append(task.name.replaceAll("\\.", "::")+" \""+output+"\" <-down- "+dt.name.replaceAll("\\.", "::")+"\n");
+			}			
+		}
+
+		
+		sb.append("@enduml\n");
+		return sb.toString();
+		
+	}
+	
 	public static String taskUml(DuneTask dt) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
@@ -165,7 +218,7 @@ public class UmlGenerator {
 		JFrame frm = new JFrame("UML");
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.setSize(800, 800);
-		frm.getContentPane().add(lbl);
+		frm.getContentPane().add(new JScrollPane(lbl));
 		frm.setVisible(true);
 	}
 
@@ -195,22 +248,58 @@ public class UmlGenerator {
 			System.out.println("Generated "+msg+".png");
 		}
 	}
+	
+	public static String configUml(File configFile) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		sb.append("@startuml\n");
+		
+		DuneConfig cfg = new DuneConfig(configFile);
+		int count = 0;
+		for (String task : cfg.activeTasks()) {
+			
+			String type = cfg.getProfileLetter(task);
+			
+			switch (type) {
+			case "A":
+				type = "<< (A,#FFCC77) >>";
+				break;
+			case "H":
+				type = "<< (H,#FFCCCC) >>";
+				break;
+			case "S":
+				type = "<< (S,#CCFF77) >>";				
+				break;
+			default:
+				type = "";
+				break;
+			}
+			
+			DuneTask dt = TaskListing.instance().resolveTask(task);
+			if (dt != null) {
+				sb.append(classUml(dt, type));
+				count++;
+				if (count % 7 == 0)
+					sb.append("layout_new_line\n");
+			}
+		}
+		sb.append("@enduml\n");
+		
+		return sb.toString();
+	}
+	
+	
 
 	public static void main(String[] args) throws Exception {
-		// DuneTask dt = new DuneTask(new
-		// File("/home/zp/workspace/dune/source/src/Control/UAV/Ardupilot/Task.cpp"));
-
-		// DuneTask dt =
-		// TaskListing.read().resolveTask("Control.UAV.Ardupilot");
-		// System.out.println(classDiagUml(dt));
-		// showUml(dt);
+		
+		String uml = UmlGenerator.configUml(new File("/home/zp/Desktop/nop3/20161017/150604_teleoperation-mode/Config.ini"));
+		 showUml(uml);
 		// taskUmlImages();
 
 		//String uml = messageUml(IMCDefinition.getInstance().getType("LogBookControl"));
 		//System.out.println(uml);
 		//showUml(uml);
 
-		msgUmlImages();
+		//msgUmlImages();
 	}
 
 }

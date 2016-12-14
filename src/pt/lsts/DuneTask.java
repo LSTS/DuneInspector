@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -180,11 +181,12 @@ public class DuneTask implements Serializable {
 
 		for (String l : lines) {
 			l = l.trim();
-			if (l.startsWith("IMC::")) {
+			if (l.startsWith("IMC::") || l.startsWith("DUNE::IMC::")) {
+				List<String> tokens = Arrays.asList(l.replaceAll("[:;=\\*\\{\\}\\]\\(\\)]", " ").split(" "));
 				for (String v : dispatches) {
 					if (l.contains("iterator"))
 						continue;
-					if (l.contains(v)) {
+					if (tokens.contains(v)) {
 						Matcher m = p.matcher(l);
 						if (m.matches())
 							outputs.add(m.group(1));
@@ -204,6 +206,6 @@ public class DuneTask implements Serializable {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(new DuneTask(new File("/home/zp/workspace/dune/source/src/DUNE/Tasks/Task.cpp")));
+		System.out.println(new DuneTask(new File("/home/zp/workspace/dune/source/src/Control/UAV/Ardupilot/Task.cpp")));
 	}
 }

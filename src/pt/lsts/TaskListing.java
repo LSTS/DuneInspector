@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 public class TaskListing implements Serializable {
 
@@ -16,8 +17,8 @@ public class TaskListing implements Serializable {
 	private File srcDir;
 	private LinkedHashMap<File, DuneTask> tasks = new LinkedHashMap<>();
 	
-	//private LinkedHashMap<String, ArrayList<File> > producers = new LinkedHashMap<>();
-	//private LinkedHashMap<String, ArrayList<File> > consumers = new LinkedHashMap<>();
+	private LinkedHashMap<String, ArrayList<File> > producers = new LinkedHashMap<>();
+	private LinkedHashMap<String, ArrayList<File> > consumers = new LinkedHashMap<>();
 
 	public LinkedHashMap<File, DuneTask> getTasks() {
 		return tasks;
@@ -110,6 +111,23 @@ public class TaskListing implements Serializable {
 				}
 			}
 		}
+		
+		for (Entry<File, DuneTask> dt : this.tasks.entrySet()) {
+			HashSet<String> inputs = dt.getValue().inputs;
+			HashSet<String> outputs = dt.getValue().outputs;
+			
+			for (String input : inputs) {
+				if (!consumers.containsKey(input))
+					consumers.put(input, new ArrayList<>());
+				consumers.get(input).add(dt.getKey());
+			}
+			
+			for (String output : outputs) {
+				if (!producers.containsKey(output))
+					producers.put(output, new ArrayList<>());
+				producers.get(output).add(dt.getKey());
+			}			
+		}
 	}
 
 	private ArrayList<File> listTasks(File duneSource) {
@@ -168,10 +186,24 @@ public class TaskListing implements Serializable {
 		}
 	}
 
+	public File getSrcDir() {
+		return srcDir;
+	}
+
+	public LinkedHashMap<String, ArrayList<File>> getProducers() {
+		return producers;
+	}
+
+	public LinkedHashMap<String, ArrayList<File>> getConsumers() {
+		return consumers;
+	}
+
 	public static void main(String[] args) throws Exception {
-		TaskListing tl = read();//rebuild(new File("/home/zp/workspace/dune/source"));
-		
-		System.out.println(tl.resolveTask("Tasks.Task"));
+		rebuild(new File("/home/zp/workspace/dune/source"));
+		System.out.println(TaskListing.instance().resolveTask("Transports.Iridium"));
+		//TaskListing tl = TaskListing.instance();
+		//System.out.println(tl.consumers);
+		//System.out.println(tl.resolveTask("Tasks.Task"));
 		
 		/*
 	Plan.Engine (/home/zp/workspace/dune/source/src/Plan/Engine/Task.cpp) : Tasks.Task {

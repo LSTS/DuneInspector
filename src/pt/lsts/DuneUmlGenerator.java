@@ -24,28 +24,72 @@ public class DuneUmlGenerator {
 		}
 	}
 
+	private static String classUml(DuneTask dt) {
+		StringBuilder sb = new StringBuilder();
+		if (dt.filename.getAbsolutePath().contains("DUNE"))
+			sb.append("class " + dt.name.replaceAll("\\.", "::") + " {\n");
+		else
+			sb.append("class " + dt.name.replaceAll("\\.", "::") + " << (T,#CC77CC) >> {\n");
+		for (String input : dt.inputs) {
+			sb.append("  ~consume(" + input + ")\n");
+		}
+		sb.append("---\n");
+		for (String output : dt.outputs) {
+			sb.append("  +dispatch(): " + output + "\n");
+		}
+
+		sb.append("}\n\n");
+		return sb.toString();
+	}
+
 	public static String classDiagUml(DuneTask dt) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
-		sb.append("Bob -> Alice : hello\n");
+		sb.append(classUml(dt));
+
+		DuneTask current = dt;
+		String parent = dt.superClass;
+		while (parent != null) {
+			DuneTask p = TaskListing.instance().resolveTask(parent);
+			if (p != null) {
+				p.name = parent;
+				sb.append(classUml(p));
+				sb.append(parent.replaceAll("\\.", "::") + " <|-- " + current.name.replaceAll("\\.", "::") + "\n");
+				current = p;
+				parent = p.superClass;
+			} else
+				break;
+		}
+
 		sb.append("@enduml\n");
 
 		return sb.toString();
 	}
-	
+
 	public static void showUml(DuneTask dt) {
-		String uml = classDiagUml(null);
+		String uml = classDiagUml(dt);
 		BufferedImage image = generateImage(uml);
 		JLabel lbl = new JLabel(new ImageIcon(image));
-		JFrame frm = new JFrame("test");
+		JFrame frm = new JFrame("UML for " + dt.name);
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.setSize(800, 800);
 		frm.getContentPane().add(lbl);
 		frm.setVisible(true);
 	}
+	
+	public static void generateClassDiagramImages() throws Exception {
+		for (DuneTask dt : TaskListing.instance().getTasks().values()) {
+			BufferedImage img = generateImage(classDiagUml(dt));
+			ImageIO.write(img, "PNG", new File(dt.name + ".png"));
+			System.out.println("Wrote "+dt.name + ".png");
+		}
+	}
 
-	public static void main(String[] args) {
-		showUml(null);
+	public static void main(String[] args) throws Exception {
+//		DuneTask dt = TaskListing.instance().resolveTask("Autonomy.TREX");
+//		System.out.println(classDiagUml(dt));
+//		showUml(dt);
+		generateClassDiagramImages();
 	}
 
 }

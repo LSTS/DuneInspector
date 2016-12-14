@@ -2,6 +2,7 @@ package pt.lsts;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +12,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DuneTask {
+public class DuneTask implements Serializable {
 
+	private static final long serialVersionUID = 6659667315202122191L;
 	File filename;
-
 	String name;
-
-	// struct Task: public <TASK>
 	String superClass;
 	DuneTask superTask;
 	HashSet<String> inputs = new HashSet<>();
 	HashSet<String> outputs = new HashSet<>();;
-	ArrayList<File> includedFiles = new ArrayList<>();
+	
+	transient ArrayList<File> includedFiles = new ArrayList<>();
 
 	public DuneTask(File task) throws IOException {
 		this.filename = task;

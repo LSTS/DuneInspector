@@ -86,9 +86,11 @@ public class DuneUmlGenerator {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		DuneTask dt = TaskListing.instance().resolveTask("Autonomy.TREX");
-//		System.out.println(classDiagUml(dt));
-//		showUml(dt);
+		//DuneTask dt = new DuneTask(new File("/home/zp/workspace/dune/source/src/Control/UAV/Ardupilot/Task.cpp"));
+		
+		//DuneTask dt = TaskListing.read().resolveTask("Control.UAV.Ardupilot");
+		//System.out.println(classDiagUml(dt));
+		//showUml(dt);
 		generateClassDiagramImages();
 	}
 

@@ -21,7 +21,7 @@ public class DuneTask implements Serializable {
 	DuneTask superTask;
 	HashSet<String> inputs = new HashSet<>();
 	HashSet<String> outputs = new HashSet<>();;
-	
+
 	transient ArrayList<File> includedFiles = new ArrayList<>();
 
 	public DuneTask(File task) throws IOException {
@@ -129,9 +129,18 @@ public class DuneTask implements Serializable {
 
 		for (String l : lines) {
 			l = l.trim();
-			if (l.contains("bind<IMC::")) {
-				l = l.substring(l.indexOf("bind<IMC::"));
-				inputs.add(l.substring("bind<IMC::".length(), l.indexOf(">(this")));
+			if (l.contains("bind<")) {
+				l = l.replaceAll("IMC::", "");
+				l = l.replaceAll("\\w*Task\\w*,\\w*", "");
+				l = l.substring(l.indexOf("bind<")).trim();
+				try {
+					inputs.add(l.substring("bind<".length(), l.indexOf(">")));
+				}
+
+				catch (Exception e) {
+					System.out.println(l);
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -159,14 +168,13 @@ public class DuneTask implements Serializable {
 
 				l = l.replaceAll("&", "");
 				dispatches.add(l.trim());
-			}
-			else if (l.contains("dispatchReply(")) {
+			} else if (l.contains("dispatchReply(")) {
 				l = l.replaceAll("[\\*&\\(\\),;\\[\\]]+", " ");
 				l = l.replaceAll("DF_KEEP_SRC_EID", "");
 				String[] parts = l.split(" ");
-				dispatches.add(parts[parts.length-1].trim());
+				dispatches.add(parts[parts.length - 1].trim());
 			}
- 			
+
 		}
 		Pattern p = Pattern.compile("IMC\\:\\:([\\w]*).*");
 
@@ -194,7 +202,7 @@ public class DuneTask implements Serializable {
 		return name + " (" + filename + ") : " + superClass + " {\n\tinputs: " + inputs + "\n\toutputs: " + outputs
 				+ "\n}\n";
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		System.out.println(new DuneTask(new File("/home/zp/workspace/dune/source/src/DUNE/Tasks/Task.cpp")));
 	}

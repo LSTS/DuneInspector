@@ -15,6 +15,9 @@ public class TaskListing implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private File srcDir;
 	private LinkedHashMap<File, DuneTask> tasks = new LinkedHashMap<>();
+	
+	//private LinkedHashMap<String, ArrayList<File> > producers = new LinkedHashMap<>();
+	//private LinkedHashMap<String, ArrayList<File> > consumers = new LinkedHashMap<>();
 
 	public LinkedHashMap<File, DuneTask> getTasks() {
 		return tasks;

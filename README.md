@@ -17,10 +17,10 @@ DuneInspector allows generating UML diagrams from DUNE source code as well as IM
 
 * Obtain the class diagram of a given DUNE task: `./inspect -task Transports.GSM`:
 
-![Task class diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM2.png)
+![Task class diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/master/examples/TransportsGSM2.png)
 
 * Obtain the communications diagram of a given DUNE task: `./inspect -comms Transports.GSM`
 
-![Task comms diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM.png)
+![Task comms diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/master/examples/TransportsGSM.png)
 
 

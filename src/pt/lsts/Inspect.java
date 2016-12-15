@@ -50,7 +50,10 @@ public class Inspect {
 
 	@Option(name = "-o", usage = "Where to write resulting image.", required = false)
 	private File OptionOutput = null;
-
+	
+	@Option(name = "-p", usage = "Profile to use when listing tasks.", required = false)
+	private String OptionProfile = null;
+	
 	private String uml = null;
 	private File lastDir = new File(".");
 	private JFrame frm = null;
@@ -198,6 +201,7 @@ public class Inspect {
 				else {
 					try {
 						new DuneConfig(OptionIniFile);
+
 					} catch (Exception e) {
 						System.err.println("Error parsing DUNE configuration: " + e.getMessage());
 						if (OptionDebug)
@@ -222,7 +226,8 @@ public class Inspect {
 							e.printStackTrace();
 					}
 					return;
-				} else if (OptionMessage.equalsIgnoreCase("list")) {
+				} 
+				else if (OptionMessage.equalsIgnoreCase("list")) {
 					ArrayList<String> msgs = new ArrayList<>();
 					msgs.addAll(IMCDefinition.getInstance().getMessageNames());
 					Collections.sort(msgs);
@@ -231,7 +236,8 @@ public class Inspect {
 					});
 					System.out.println(" * All (all messages ouput as PNG).");
 					return;
-				} else {
+				} 
+				else {
 					IMCMessageType type = IMCDefinition.getInstance().getType(OptionMessage);
 
 					if (type == null) {
@@ -242,7 +248,8 @@ public class Inspect {
 					String uml = UmlGenerator.messageUml(type);
 					showUml(uml);
 				}
-			} else if (OptionTask != null) {
+			} 
+			else if (OptionTask != null) {
 				if (OptionTask.equalsIgnoreCase("all")) {
 					try {
 						UmlGenerator.taskUmlImages();
@@ -264,7 +271,8 @@ public class Inspect {
 					});
 					System.out.println(" * All (all tasks ouput as PNG).");
 					return;
-				} else {
+				} 
+				else {
 					DuneTask dt = TaskListing.instance().resolveTask(OptionTask);
 
 					if (dt == null) {
@@ -275,6 +283,17 @@ public class Inspect {
 					String uml = UmlGenerator.taskInteractionUml(dt);
 					showUml(uml);
 				}
+			} 
+			else if (OptionIniFile != null) {
+				try {
+					String uml = UmlGenerator.configUml(OptionIniFile, OptionProfile);
+					showUml(uml);
+				} catch (Exception e) {
+					System.err.println("Error generating UML for tasks: " + e.getMessage());
+					if (OptionDebug)
+						e.printStackTrace();
+				}
+
 			}
 		} catch (CmdLineException e) {
 			System.err.println("" + e.getMessage() + ". Valid Arguments:");
@@ -284,7 +303,6 @@ public class Inspect {
 	}
 
 	public static void main(String[] args) throws IOException {
-		//new Inspect().doMain(args);
-		new Inspect().doMain(new String[] {"-task", "Transports.UAN"});
+		new Inspect().doMain(args);		
 	}
 }

@@ -17,13 +17,16 @@ import pt.lsts.imc.IMCMessageType;
 
 /**
  * This class is used to generate UML diagrams for DUNE and IMC
+ * 
  * @author zp
  */
 public class UmlGenerator {
 
 	/**
-	 * Parses given UML and generates an Image using PlantUML 
-	 * @param uml The String containing the UML
+	 * Parses given UML and generates an Image using PlantUML
+	 * 
+	 * @param uml
+	 *            The String containing the UML
 	 * @return Resulting image
 	 */
 	public static BufferedImage generateImage(String uml) {
@@ -56,8 +59,7 @@ public class UmlGenerator {
 			sb.append("class Message << (A,#CC77CC) >> {\n");
 		else if (!IMCDefinition.getInstance().getConcreteMessages().contains(msg.getShortName())) {
 			sb.append("class " + msg.getShortName() + " << (A,#CC77CC) >> {\n");
-		}
-		else {
+		} else {
 			sb.append("class " + msg.getShortName() + " {\n");
 		}
 
@@ -92,17 +94,17 @@ public class UmlGenerator {
 		msgsToAdd.addAll(thisMsgs);
 		msgsToAdd.add(superType);
 		msgsToAdd.removeAll(msgs);
-		
+
 		while (!msgsToAdd.isEmpty()) {
 			String m = msgsToAdd.iterator().next();
 			msgs.add(m);
 			if (m.equals("Message"))
 				sb.append(msgUml(IMCDefinition.getInstance().getHeaderType(), msgs));
 			else
-				sb.append(msgUml(IMCDefinition.getInstance().getType(m), msgs));			
+				sb.append(msgUml(IMCDefinition.getInstance().getType(m), msgs));
 			msgsToAdd.removeAll(msgs);
 		}
-		
+
 		for (String m : thisMsgLists)
 			sb.append(msg.getShortName() + " *-- \"*\"" + m + "\n");
 
@@ -121,11 +123,10 @@ public class UmlGenerator {
 		else
 			return classUml(dt, "<< (T,#7777CC) >>");
 	}
-	
-	
+
 	private static String classUml(DuneTask dt, String type) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class " + dt.name.replaceAll("\\.", "::") + " "+type+" {\n");
+		sb.append("class " + dt.name.replaceAll("\\.", "::") + " " + type + " {\n");
 		for (String input : dt.inputs) {
 			sb.append("  ~consume(" + input + ")\n");
 		}
@@ -142,25 +143,26 @@ public class UmlGenerator {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
 		sb.append(classUml(dt));
-		//sb.append("layout_new_line\n");
+		// sb.append("layout_new_line\n");
 		ArrayList<File> msgs = new ArrayList<>();
 		msgs.add(dt.filename);
 		for (String input : dt.inputs) {
 			if (TaskListing.instance().getProducers().get(input) == null)
 				continue;
 			for (File f : TaskListing.instance().getProducers().get(input)) {
-				
+
 				DuneTask task = TaskListing.instance().getTasks().get(f);
 				if (!msgs.contains(f)) {
 					sb.append(classUml(task));
 					msgs.add(f);
-					sb.append(task.name.replaceAll("\\.", "::")+" \""+input+"\" -down-> "+dt.name.replaceAll("\\.", "::")+"\n");
-				}
-				else
-					sb.append(task.name.replaceAll("\\.", "::")+" \""+input+"\" -down-> "+dt.name.replaceAll("\\.", "::")+"\n");
-			}			
+					sb.append(task.name.replaceAll("\\.", "::") + " \"" + input + "\" -down-> "
+							+ dt.name.replaceAll("\\.", "::") + "\n");
+				} else
+					sb.append(task.name.replaceAll("\\.", "::") + " \"" + input + "\" -down-> "
+							+ dt.name.replaceAll("\\.", "::") + "\n");
+			}
 		}
-		
+
 		for (String output : dt.outputs) {
 			if (TaskListing.instance().getConsumers().get(output) == null)
 				continue;
@@ -171,19 +173,19 @@ public class UmlGenerator {
 				if (!msgs.contains(f)) {
 					sb.append(classUml(task));
 					msgs.add(f);
-					sb.append(task.name.replaceAll("\\.", "::")+" \""+output+"\" <-down- "+dt.name.replaceAll("\\.", "::")+"\n");
-				}
-				else
-					sb.append(task.name.replaceAll("\\.", "::")+" \""+output+"\" <-down- "+dt.name.replaceAll("\\.", "::")+"\n");
-			}			
+					sb.append(task.name.replaceAll("\\.", "::") + " \"" + output + "\" <-down- "
+							+ dt.name.replaceAll("\\.", "::") + "\n");
+				} else
+					sb.append(task.name.replaceAll("\\.", "::") + " \"" + output + "\" <-down- "
+							+ dt.name.replaceAll("\\.", "::") + "\n");
+			}
 		}
 
-		
 		sb.append("@enduml\n");
 		return sb.toString();
-		
+
 	}
-	
+
 	public static String taskUml(DuneTask dt) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
@@ -207,10 +209,12 @@ public class UmlGenerator {
 
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Parse the provided UML and show the result on the screen
-	 * @param uml The UML to be parsed
+	 * 
+	 * @param uml
+	 *            The UML to be parsed
 	 */
 	public static void showUml(String uml) {
 		BufferedImage image = generateImage(uml);
@@ -223,8 +227,10 @@ public class UmlGenerator {
 	}
 
 	/**
-	 * Generates PNG images for all cached DUNE tasks. 
-	 * @throws Exception In case of disk writting errors
+	 * Generates PNG images for all cached DUNE tasks.
+	 * 
+	 * @throws Exception
+	 *             In case of disk writting errors
 	 * @see TaskListing
 	 */
 	public static void taskUmlImages() throws Exception {
@@ -236,7 +242,9 @@ public class UmlGenerator {
 
 	/**
 	 * Generates PNG images for all known IMC Messages
-	 * @throws Exception In case of disk writting errors
+	 * 
+	 * @throws Exception
+	 *             In case of disk writting errors
 	 * @see IMCDefinition
 	 */
 	public static void msgUmlImages() throws Exception {
@@ -245,35 +253,39 @@ public class UmlGenerator {
 
 			BufferedImage img = generateImage(messageUml(msgType));
 			ImageIO.write(img, "PNG", new File(msg + ".png"));
-			System.out.println("Generated "+msg+".png");
+			System.out.println("Generated " + msg + ".png");
 		}
 	}
-	
-	public static String configUml(File configFile) throws Exception {
+
+	public static String configUml(File configFile, String profile) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
-		
+
 		DuneConfig cfg = new DuneConfig(configFile);
 		int count = 0;
 		for (String task : cfg.activeTasks()) {
-			
+
 			String type = cfg.getProfileLetter(task);
-			
+
 			switch (type) {
 			case "A":
 				type = "<< (A,#FFCC77) >>";
 				break;
 			case "H":
+				if (profile != null && !profile.toLowerCase().contains("hardware"))
+					continue;
 				type = "<< (H,#FFCCCC) >>";
 				break;
 			case "S":
-				type = "<< (S,#CCFF77) >>";				
+				if (profile != null && !profile.toLowerCase().contains("simulation"))
+					continue;
+				type = "<< (S,#CCFF77) >>";
 				break;
 			default:
 				type = "";
 				break;
 			}
-			
+
 			DuneTask dt = TaskListing.instance().resolveTask(task);
 			if (dt != null) {
 				sb.append(classUml(dt, type));
@@ -283,23 +295,11 @@ public class UmlGenerator {
 			}
 		}
 		sb.append("@enduml\n");
-		
+
 		return sb.toString();
 	}
-	
-	
 
 	public static void main(String[] args) throws Exception {
-		
-		String uml = UmlGenerator.configUml(new File("/home/zp/Desktop/2016-10-12-apdl/logs/lauv-noptilus-2/20161012/105323_NecSlave/Config.ini"));
-		 showUml(uml);
-		// taskUmlImages();
-
-		//String uml = messageUml(IMCDefinition.getInstance().getType("LogBookControl"));
-		//System.out.println(uml);
-		//showUml(uml);
-
-		//msgUmlImages();
 	}
 
 }

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ public class TaskListing implements Serializable {
 				instance = read();
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Generating new TaskListing...");
 				try {
 					instance = rebuild(new File("/home/zp/workspace/dune/source"));	
@@ -48,6 +50,11 @@ public class TaskListing implements Serializable {
 	}
 	
 	public static TaskListing read() throws Exception {
+		
+		if (!new File("tl.obj").canRead()) {
+			Files.copy(TaskListing.class.getClassLoader().getResourceAsStream("res/tl.obj"), new File("tl.obj").toPath());
+		}
+		
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream("tl.obj"));

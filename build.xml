@@ -16,7 +16,8 @@
     <mkdir dir="build"/>
     <delete dir="build"/>
     <mkdir dir="build"/>    
-
+  	<mkdir dir="build/res"/>
+  	
     <javac srcdir="src"  destdir="build" includes="**/*.java" fork="false">
     	<classpath refid="classpath.dependencies"/>
     </javac>
@@ -24,6 +25,7 @@
   	<unjar src="libs/plantuml.jar" dest="build"/>
   	<unjar src="libs/ini4j-0.5.4.jar" dest="build"/>
    	<unjar src="libs/args4j-2.33.jar" dest="build"/>
+  	<copy file="res/tl.obj" todir="build/res"/>
   </target>
   
   <target name="inspect.jar" depends="compile">

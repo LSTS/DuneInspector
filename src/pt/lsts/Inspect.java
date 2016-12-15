@@ -33,7 +33,7 @@ import pt.lsts.imc.IMCMessageType;
 
 public class Inspect {
 
-	@Option(name = "-dsrc", usage = "DUNE source folder using to inspect Tasks.", required = false)
+	@Option(name = "-dsrc", usage = "DUNE source folder used to generate Task UML.", required = false)
 	private File OptionDuneSrc = null;
 
 	@Option(name = "-msg", usage = "Message for which to generate UML.", required = false)
@@ -42,7 +42,7 @@ public class Inspect {
 	@Option(name = "-task", usage = "Task for which to generate UML. ", required = false)
 	private String OptionTask = null;
 
-	@Option(name = "-ini", usage = "INI file from where to read configuration.", required = false)
+	@Option(name = "-ini", usage = "INI file from where to read running configuration.", required = false)
 	private File OptionIniFile = null;
 
 	@Option(name = "-debug", usage = "Output debug in case of errors.", required = false)
@@ -284,6 +284,7 @@ public class Inspect {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Inspect().doMain(args);
+		//new Inspect().doMain(args);
+		new Inspect().doMain(new String[] {"-task", "Transports.UAN"});
 	}
 }

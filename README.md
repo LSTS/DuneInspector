@@ -11,15 +11,16 @@ DuneInspector allows generating UML diagrams from DUNE source code as well as IM
 * Provided you Java 8 and GraphViz installed, you can run DuneInspector by executing the *inspect* binary simply by running: `./inspect` which will give you a list of accepted arguments.
 
 ## Running Examples
-* Obtain the UML (message fields) for a given IMC message: `./inspect -msg TrexToken`
+* Obtain the UML (message fields) for a given IMC message: `./inspect -msg TrexToken`:
 
-[[https://github.com/zepinto/DuneInspector/blob/master/examples/TrexToken.png|alt=octocat]]
+![Message UML](https://raw.githubusercontent.com/zepinto/DuneInspector/master/examples/TrexToken.png)
 
-* Obtain the class diagram of a given DUNE task: `./inspect -task Transports.GSM`
+* Obtain the class diagram of a given DUNE task: `./inspect -task Transports.GSM`:
 
-[[https://github.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM2.png|alt=octocat]]
+![Task class diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM2.png)
 
 * Obtain the communications diagram of a given DUNE task: `./inspect -comms Transports.GSM`
 
-[[https://github.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM.png|alt=octocat]]
+![Task comms diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/blob/master/examples/TransportsGSM.png)
+
 

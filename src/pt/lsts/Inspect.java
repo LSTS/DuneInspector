@@ -39,9 +39,12 @@ public class Inspect {
 	@Option(name = "-msg", usage = "Message for which to generate UML.", required = false)
 	private String OptionMessage = null;
 
-	@Option(name = "-task", usage = "Task for which to generate UML. ", required = false)
+	@Option(name = "-comms", usage = "Communications diagram for given DUNE task.", required = false)
 	private String OptionTask = null;
-
+	
+	@Option(name = "-task", usage = "Class diagram for given DUNE task.", required = false)
+	private String OptionTaskUml = null;
+	
 	@Option(name = "-ini", usage = "INI file from where to read running configuration.", required = false)
 	private File OptionIniFile = null;
 
@@ -210,11 +213,21 @@ public class Inspect {
 				}
 			}
 
-			if (OptionTask == null && OptionMessage == null && OptionIniFile == null)
-				throw new CmdLineException(parser, "You have to select a task (-task) or a message (-msg)");
+			int count = 0;
+			if (OptionTaskUml != null)
+				count++;
+			
+			if (OptionMessage != null)
+				count++;
+			
+			if (OptionTask != null)
+				count++;
+			
+			if (count == 0)
+				throw new CmdLineException(parser, "You have to select a task or a message");
 
-			if (OptionTask != null && OptionMessage != null)
-				throw new CmdLineException(parser, "You have to select either a task (-task) or a message (-msg)");
+			if (count > 1)
+				throw new CmdLineException(parser, "You can only use one of (-task, -comm, -msg)");
 
 			if (OptionMessage != null) {
 				if (OptionMessage.equalsIgnoreCase("all")) {
@@ -259,7 +272,21 @@ public class Inspect {
 							e.printStackTrace();
 					}
 					return;
-				} else if (OptionTask.equalsIgnoreCase("list")) {
+				}
+				else {
+					DuneTask dt = TaskListing.instance().resolveTask(OptionTask);
+
+					if (dt == null) {
+						throw new CmdLineException(parser,
+								"Task name (-task) provided is unknown use '-task list' for a list of valid tasks.");
+					}
+
+					String uml = UmlGenerator.taskInteractionUml(dt);
+					showUml(uml);
+				}
+			}
+			else if (OptionTaskUml != null) {
+				if (OptionTaskUml.equalsIgnoreCase("list")) {
 					ArrayList<String> tasks = new ArrayList<>();
 
 					TaskListing.instance().getTasks().values().forEach(it -> {
@@ -273,17 +300,17 @@ public class Inspect {
 					return;
 				} 
 				else {
-					DuneTask dt = TaskListing.instance().resolveTask(OptionTask);
+					DuneTask dt = TaskListing.instance().resolveTask(OptionTaskUml);
 
 					if (dt == null) {
 						throw new CmdLineException(parser,
 								"Task name (-task) provided is unknown use '-task list' for a list of valid tasks.");
 					}
 
-					String uml = UmlGenerator.taskInteractionUml(dt);
+					String uml = UmlGenerator.taskUml(dt);
 					showUml(uml);
 				}
-			} 
+			}
 			else if (OptionIniFile != null) {
 				try {
 					String uml = UmlGenerator.configUml(OptionIniFile, OptionProfile);

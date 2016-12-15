@@ -23,4 +23,8 @@ DuneInspector allows generating UML diagrams from DUNE source code as well as IM
 
 ![Task comms diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/master/examples/TransportsGSM.png)
 
+* Obtain the communications diagram of a given Message: `./inspect -comms Salinity`
+
+![Task comms diagram](https://raw.githubusercontent.com/zepinto/DuneInspector/master/examples/Salinity.png)
+
 

@@ -1,0 +1,45 @@
+<project name="DuneInspector" default="inspect">
+
+  <path id="classpath.dependencies">
+    <pathelement location="libs/libimc.jar" />
+  	<pathelement location="libs/plantuml.jar" />
+  	<pathelement location="libs/ini4j-0.5.4.jar" />
+  	<pathelement location="libs/args4j-2.33.jar" />
+  </path>	
+	
+  <path id="classpath.base">
+  	<path refid="classpath.dependencies" />
+  	<pathelement location="build" />  	
+  </path>
+	
+  <target name="compile">
+    <mkdir dir="build"/>
+    <delete dir="build"/>
+    <mkdir dir="build"/>    
+
+    <javac srcdir="src"  destdir="build" includes="**/*.java" fork="false">
+    	<classpath refid="classpath.dependencies"/>
+    </javac>
+   	<unjar src="libs/libimc.jar" dest="build"/>
+  	<unjar src="libs/plantuml.jar" dest="build"/>
+  	<unjar src="libs/ini4j-0.5.4.jar" dest="build"/>
+   	<unjar src="libs/args4j-2.33.jar" dest="build"/>
+  </target>
+  
+  <target name="inspect.jar" depends="compile">
+    <jar destfile="inspect.jar" basedir="build" index="true">
+    	<manifest>
+    		<attribute name="Main-Class" value="pt.lsts.Inspect"/>
+    	</manifest>
+    </jar>
+  </target>
+
+  <target name="inspect" depends="inspect.jar">
+    <exec executable="libs/jar2sh.sh" >
+      <arg value="inspect"/>
+      <arg value="inspect.jar"/>
+    </exec>
+
+    <delete file="inspect.jar" />
+  </target>
+</project>

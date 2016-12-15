@@ -38,7 +38,7 @@ public class UmlGenerator {
 		}
 	}
 
-	private static String messageUml(IMCMessageType msg) {
+	public static String messageUml(IMCMessageType msg) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
 		sb.append(msgUml(msg, new HashSet<>()));
@@ -291,7 +291,7 @@ public class UmlGenerator {
 
 	public static void main(String[] args) throws Exception {
 		
-		String uml = UmlGenerator.configUml(new File("/home/zp/Desktop/nop3/20161017/150604_teleoperation-mode/Config.ini"));
+		String uml = UmlGenerator.configUml(new File("/home/zp/Desktop/2016-10-12-apdl/logs/lauv-noptilus-2/20161012/105323_NecSlave/Config.ini"));
 		 showUml(uml);
 		// taskUmlImages();
 

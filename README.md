@@ -6,6 +6,7 @@ DuneInspector allows generating UML diagrams from DUNE source code as well as IM
 ## Compiling
 * To compile you need Oracle's Java Development Kit (JDK) 8 and Apache ANT.
 * In the folder of the project, just run `ant inspect` and the *inspect* binary will be produced.
+* Alternatively, you can run a [pre-compiled version](https://github.com/zepinto/DuneInspector/releases/latest).
 
 ## Running
 * Provided you Java 8 and GraphViz installed, you can run DuneInspector by executing the *inspect* binary simply by running: `./inspect` which will give you a list of accepted arguments.

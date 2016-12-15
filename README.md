@@ -1,6 +1,5 @@
-# DuneInspector Wiki
+# DuneInspector
 
-## What it it?
 DuneInspector allows generating UML diagrams from DUNE source code as well as IMC messages. It can be used to learn more about DUNE and better understand interactions between Tasks running in a DUNE system.
 
 ## Compiling

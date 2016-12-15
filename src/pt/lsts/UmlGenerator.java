@@ -155,10 +155,12 @@ public class UmlGenerator {
 		HashSet<DuneTask> producers = new HashSet<>();
 		HashSet<DuneTask> all = new HashSet<>();
 		
-		TaskListing.instance().getConsumers().get(msg.getShortName()).forEach( it -> {
-			consumers.add(TaskListing.instance().getTasks().get(it));
-		});
+		if (TaskListing.instance().getConsumers().get(msg.getShortName()) != null)
+			TaskListing.instance().getConsumers().get(msg.getShortName()).forEach( it -> {
+				consumers.add(TaskListing.instance().getTasks().get(it));
+			});
 		
+		if (TaskListing.instance().getProducers().get(msg.getShortName()) != null)
 		TaskListing.instance().getProducers().get(msg.getShortName()).forEach( it -> {
 			producers.add(TaskListing.instance().getTasks().get(it));
 		});

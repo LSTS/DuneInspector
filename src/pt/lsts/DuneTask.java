@@ -204,6 +204,19 @@ public class DuneTask implements Serializable {
 		return name + " (" + filename + ") : " + superClass + " {\n\tinputs: " + inputs + "\n\toutputs: " + outputs
 				+ "\n}\n";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DuneTask) {
+			return filename.getAbsolutePath().equals(((DuneTask)obj).filename.getAbsolutePath());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return filename.getAbsolutePath().hashCode();
+	}
 
 	public static void main(String[] args) throws Exception {
 		System.out.println(new DuneTask(new File("/home/zp/workspace/dune/source/src/Control/UAV/Ardupilot/Task.cpp")));

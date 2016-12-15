@@ -39,8 +39,8 @@ public class Inspect {
 	@Option(name = "-msg", usage = "Message for which to generate UML.", required = false)
 	private String OptionMessage = null;
 
-	@Option(name = "-comms", usage = "Communications diagram for given DUNE task.", required = false)
-	private String OptionTask = null;
+	@Option(name = "-comms", usage = "Communications diagram for given DUNE task or IMC message.", required = false)
+	private String OptionComms = null;
 	
 	@Option(name = "-task", usage = "Class diagram for given DUNE task.", required = false)
 	private String OptionTaskUml = null;
@@ -220,7 +220,7 @@ public class Inspect {
 			if (OptionMessage != null)
 				count++;
 			
-			if (OptionTask != null)
+			if (OptionComms != null)
 				count++;
 			
 			if (count == 0)
@@ -262,8 +262,23 @@ public class Inspect {
 					showUml(uml);
 				}
 			} 
-			else if (OptionTask != null) {
-				if (OptionTask.equalsIgnoreCase("all")) {
+			else if (OptionComms != null) {
+				Object obj = TaskListing.instance().resolveTask(OptionComms);
+				
+				if (obj == null)
+					obj = IMCDefinition.getInstance().getType(OptionComms);
+
+				if (obj == null) {
+					throw new CmdLineException(parser,
+							"Name provided is unknown. Use '-task list' or '-msg list' for a valid names.");
+				}
+
+				String uml = UmlGenerator.interactionUml(obj);
+				showUml(uml);
+				
+			}
+			if (OptionTaskUml != null) {
+				if (OptionTaskUml.equalsIgnoreCase("all")) {
 					try {
 						UmlGenerator.taskUmlImages();
 					} catch (Exception e) {
@@ -273,20 +288,7 @@ public class Inspect {
 					}
 					return;
 				}
-				else {
-					DuneTask dt = TaskListing.instance().resolveTask(OptionTask);
-
-					if (dt == null) {
-						throw new CmdLineException(parser,
-								"Task name (-task) provided is unknown use '-task list' for a list of valid tasks.");
-					}
-
-					String uml = UmlGenerator.taskInteractionUml(dt);
-					showUml(uml);
-				}
-			}
-			else if (OptionTaskUml != null) {
-				if (OptionTaskUml.equalsIgnoreCase("list")) {
+				else if (OptionTaskUml.equalsIgnoreCase("list")) {
 					ArrayList<String> tasks = new ArrayList<>();
 
 					TaskListing.instance().getTasks().values().forEach(it -> {

@@ -174,11 +174,11 @@ public class TaskListing implements Serializable {
 		for (File r : roots) {
 			String fname = r.getAbsolutePath() + "/" + dir + ".cpp";
 			if (new File(fname).exists()) {
-				return new File(fname);
+				return new File(fname).getAbsoluteFile();
 			}
 			fname = r.getAbsolutePath() + "/" + dir + "/Task.cpp";
 			if (new File(fname).exists()) {
-				return new File(fname);
+				return new File(fname).getAbsoluteFile();
 			}
 		}
 

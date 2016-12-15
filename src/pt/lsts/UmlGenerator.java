@@ -139,6 +139,49 @@ public class UmlGenerator {
 		return sb.toString();
 	}
 
+	public static String interactionUml(Object obj) {
+		if (obj instanceof IMCMessageType)
+			return msgInteractionUml((IMCMessageType) obj);
+		if (obj instanceof DuneTask)
+			return taskInteractionUml((DuneTask) obj);
+		return null;
+	}
+
+	public static String msgInteractionUml(IMCMessageType msg) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("@startuml\n");
+
+		HashSet<DuneTask> consumers = new HashSet<>(); 
+		HashSet<DuneTask> producers = new HashSet<>();
+		HashSet<DuneTask> all = new HashSet<>();
+		
+		TaskListing.instance().getConsumers().get(msg.getShortName()).forEach( it -> {
+			consumers.add(TaskListing.instance().getTasks().get(it));
+		});
+		
+		TaskListing.instance().getProducers().get(msg.getShortName()).forEach( it -> {
+			producers.add(TaskListing.instance().getTasks().get(it));
+		});
+				
+		all.addAll(producers);
+		all.addAll(consumers);
+		
+		for (DuneTask dt : all) {
+			sb.append(classUml(dt));
+		}
+
+		for (DuneTask producer : producers) {
+			for (DuneTask consumer : consumers) {
+				
+				sb.append(consumer.name.replaceAll("\\.", "::") + " <-down- " + producer.name.replaceAll("\\.", "::")
+						+ "\n");
+			}
+		}
+
+		sb.append("@enduml\n");
+		return sb.toString();
+	}
+
 	public static String taskInteractionUml(DuneTask dt) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@startuml\n");
@@ -250,7 +293,6 @@ public class UmlGenerator {
 	public static void msgUmlImages() throws Exception {
 		for (String msg : IMCDefinition.getInstance().getMessageNames()) {
 			IMCMessageType msgType = IMCDefinition.getInstance().getType(msg);
-
 			BufferedImage img = generateImage(messageUml(msgType));
 			ImageIO.write(img, "PNG", new File(msg + ".png"));
 			System.out.println("Generated " + msg + ".png");

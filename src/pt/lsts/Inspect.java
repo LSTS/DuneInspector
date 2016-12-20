@@ -57,10 +57,15 @@ public class Inspect {
 	@Option(name = "-p", usage = "Profile to use when listing tasks.", required = false)
 	private String OptionProfile = null;
 	
+	@Option(name = "-uml", usage = "Load previously generated UML.", required = false)
+	private File OptionUml = null;
+
+	
 	private String uml = null;
 	private File lastDir = new File(".");
 	private JFrame frm = null;
-
+	private JLabel lbl;
+	
 	private void showUml(final String uml) {
 		this.uml = uml;
 
@@ -83,18 +88,24 @@ public class Inspect {
 		frm.getContentPane().setBackground(Color.white);
 
 		BufferedImage img = UmlGenerator.generateImage(uml);
-		JLabel lbl = new JLabel(new ImageIcon(img));
+		lbl = new JLabel(new ImageIcon(img));
 		frm.getContentPane().add(new JScrollPane(lbl));
 		JMenuBar menubar = new JMenuBar();
 		JMenu menu = new JMenu("Save as...");
 		menu.add("PNG Image").addActionListener(this::savePng);
 		menu.add("SVG Image").addActionListener(this::saveSvg);
 		menu.add("Text").addActionListener(this::saveText);
+		menu.addSeparator();
+		menu.add("Exit").addActionListener(this::exit);
 		menubar.add(menu);
 		frm.setJMenuBar(menubar);
 		frm.setVisible(true);
 	}
 
+	private void exit(ActionEvent evt) {
+		System.exit(0);
+	}
+	
 	private File selectFile(String description, String... extensions) {
 		JFileChooser chooser = new JFileChooser(lastDir);
 		chooser.setDialogTitle(description);
@@ -220,14 +231,17 @@ public class Inspect {
 			if (OptionMessage != null)
 				count++;
 			
+			if (OptionUml != null)
+				count++;
+			
 			if (OptionComms != null)
 				count++;
 			
 			if (count == 0)
-				throw new CmdLineException(parser, "You have to select a task or a message");
+				throw new CmdLineException(parser, "You have to select an option");
 
 			if (count > 1)
-				throw new CmdLineException(parser, "You can only use one of (-task, -comm, -msg)");
+				throw new CmdLineException(parser, "You can only use one of (-task, -comm, -msg, -uml)");
 
 			if (OptionMessage != null) {
 				if (OptionMessage.equalsIgnoreCase("all")) {
@@ -323,6 +337,17 @@ public class Inspect {
 						e.printStackTrace();
 				}
 
+			}
+			else if (OptionUml != null) {
+				try {
+					String uml = new String(Files.readAllBytes(OptionUml.toPath()));
+					showUml(uml);
+				}
+				catch (Exception e) {
+					System.err.println("Error loading UML file: " + e.getMessage());
+					if (OptionDebug)
+						e.printStackTrace();
+				}
 			}
 		} catch (CmdLineException e) {
 			System.err.println("" + e.getMessage() + ". Valid Arguments:");

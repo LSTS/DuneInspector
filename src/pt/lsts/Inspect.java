@@ -237,11 +237,14 @@ public class Inspect {
 			if (OptionComms != null)
 				count++;
 			
+			if (OptionIniFile != null)
+				count++;
+
 			if (count == 0)
-				throw new CmdLineException(parser, "You have to select an option");
+				throw new CmdLineException(parser, "You have to select an option!!");
 
 			if (count > 1)
-				throw new CmdLineException(parser, "You can only use one of (-task, -comm, -msg, -uml)");
+				throw new CmdLineException(parser, "You can only use one of (-ini, -task, -comm, -msg, -uml)");
 
 			if (OptionMessage != null) {
 				if (OptionMessage.equalsIgnoreCase("all")) {
